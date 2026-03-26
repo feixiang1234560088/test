@@ -641,8 +641,7 @@
       "listen": "127.0.0.1",
       "listen_port": 7890,
       "tcp_fast_open": true,
-      "tcp_multi_path": false,
-      "sniff": true
+      "tcp_multi_path": false
     }
   ],
   "experimental": {
