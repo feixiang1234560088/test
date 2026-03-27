@@ -47,7 +47,7 @@
           "AAAA"
         ],
         "server": "fakeip",
-        "rewrite_ttl": 1
+        "rewrite_ttl": 60
       }
     ],
     "final": "google",
@@ -627,8 +627,8 @@
         "172.19.0.0/30",
         "fdfe:dcba:9876::0/126"
       ],
-      "mtu": 1500,
-      "stack": "system",
+      "mtu": 9000,
+      "stack": "mixed",
       "auto_route": true,
       "strict_route": true,
       "endpoint_independent_nat": true,
