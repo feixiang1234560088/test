@@ -58,7 +58,7 @@
     ],
     "final": "google",
     "strategy": "prefer_ipv4",
-    "independent_cache": true
+    "cache_capacity": 500
   },
   "route": {
     "default_domain_resolver": {
@@ -74,7 +74,7 @@
           "quic",
           "dns"
         ],
-        "timeout": "50ms"
+        "timeout": "30ms"
       },
       {
         "type": "logical",
@@ -142,7 +142,8 @@
         "outbound": "proxy"
       },
       {
-        "action": "resolve"
+        "action": "resolve",
+        "strategy": "prefer_ipv4"
       },
       {
         "rule_set": "netflix_ip",
@@ -291,6 +292,7 @@
       "tag": "proxy",
       "type": "selector",
       "outbounds": [
+        "all-auto",
         "hk",
         "hk-auto",
         "tw",
@@ -302,7 +304,6 @@
         "us",
         "us-auto",
         "all",
-        "all-auto",
         "direct"
       ],
       "default": "all-auto",
@@ -312,7 +313,7 @@
       "tag": "Google",
       "type": "selector",
       "outbounds": [
-        "proxy",
+        "all-auto",
         "direct",
         "hk",
         "hk-auto",
@@ -324,18 +325,17 @@
         "sg-auto",
         "us",
         "us-auto",
-        "all",
-        "all-auto"
+        "all"
       ],
-      "default": "proxy",
+      "default": "all-auto",
       "interrupt_exist_connections": false
     },
     {
       "tag": "Apple",
       "type": "selector",
       "outbounds": [
-        "proxy",
         "direct",
+        "all-auto",
         "hk",
         "hk-auto",
         "tw",
@@ -346,8 +346,7 @@
         "sg-auto",
         "us",
         "us-auto",
-        "all",
-        "all-auto"
+        "all"
       ],
       "default": "direct",
       "interrupt_exist_connections": false
@@ -356,7 +355,7 @@
       "tag": "Telegram",
       "type": "selector",
       "outbounds": [
-        "proxy",
+        "all-auto",
         "direct",
         "hk",
         "hk-auto",
@@ -368,18 +367,17 @@
         "sg-auto",
         "us",
         "us-auto",
-        "all",
-        "all-auto"
+        "all"
       ],
-      "default": "proxy",
+      "default": "all-auto",
       "interrupt_exist_connections": false
     },
     {
       "tag": "Bilibili",
       "type": "selector",
       "outbounds": [
-        "proxy",
         "direct",
+        "all-auto",
         "hk",
         "hk-auto",
         "tw",
@@ -390,8 +388,7 @@
         "sg-auto",
         "us",
         "us-auto",
-        "all",
-        "all-auto"
+        "all"
       ],
       "default": "direct",
       "interrupt_exist_connections": false
@@ -400,7 +397,7 @@
       "tag": "Netflix",
       "type": "selector",
       "outbounds": [
-        "proxy",
+        "all-auto",
         "direct",
         "hk",
         "hk-auto",
@@ -412,39 +409,37 @@
         "sg-auto",
         "us",
         "us-auto",
-        "all",
-        "all-auto"
+        "all"
       ],
-      "default": "proxy",
+      "default": "all-auto",
       "interrupt_exist_connections": false
     },
     {
       "tag": "Bahamut",
       "type": "selector",
       "outbounds": [
-        "proxy",
+        "all-auto",
+        "tw",
+        "tw-auto",
         "direct",
         "hk",
         "hk-auto",
-        "tw",
-        "tw-auto",
         "jp",
         "jp-auto",
         "sg",
         "sg-auto",
         "us",
         "us-auto",
-        "all",
-        "all-auto"
+        "all"
       ],
-      "default": "proxy",
+      "default": "tw-auto",
       "interrupt_exist_connections": false
     },
     {
       "tag": "YouTube",
       "type": "selector",
       "outbounds": [
-        "proxy",
+        "all-auto",
         "direct",
         "hk",
         "hk-auto",
@@ -456,40 +451,38 @@
         "sg-auto",
         "us",
         "us-auto",
-        "all",
-        "all-auto"
+        "all"
       ],
-      "default": "proxy",
+      "default": "all-auto",
       "interrupt_exist_connections": false
     },
     {
       "tag": "OpenAI",
       "type": "selector",
       "outbounds": [
-        "proxy",
+        "us-auto",
+        "jp-auto",
+        "sg-auto",
+        "all-auto",
         "direct",
         "hk",
         "hk-auto",
         "tw",
         "tw-auto",
         "jp",
-        "jp-auto",
         "sg",
-        "sg-auto",
         "us",
-        "us-auto",
-        "all",
-        "all-auto"
+        "all"
       ],
-      "default": "proxy",
+      "default": "us-auto",
       "interrupt_exist_connections": false
     },
     {
       "tag": "CN",
       "type": "selector",
       "outbounds": [
-        "proxy",
         "direct",
+        "all-auto",
         "hk",
         "hk-auto",
         "tw",
@@ -500,8 +493,7 @@
         "sg-auto",
         "us",
         "us-auto",
-        "all",
-        "all-auto"
+        "all"
       ],
       "default": "direct",
       "interrupt_exist_connections": false
@@ -510,7 +502,7 @@
       "tag": "final",
       "type": "selector",
       "outbounds": [
-        "proxy",
+        "all-auto",
         "direct",
         "hk",
         "hk-auto",
@@ -522,10 +514,9 @@
         "sg-auto",
         "us",
         "us-auto",
-        "all",
-        "all-auto"
+        "all"
       ],
-      "default": "proxy",
+      "default": "all-auto",
       "interrupt_exist_connections": false
     },
     {
@@ -571,7 +562,7 @@
       "url": "https://www.gstatic.com/generate_204",
       "interval": "10m",
       "idle_timeout": "50m",
-      "tolerance": 50,
+      "tolerance": 30,
       "interrupt_exist_connections": false
     },
     {
@@ -581,7 +572,7 @@
       "url": "https://www.gstatic.com/generate_204",
       "interval": "10m",
       "idle_timeout": "50m",
-      "tolerance": 50,
+      "tolerance": 30,
       "interrupt_exist_connections": false
     },
     {
@@ -591,7 +582,7 @@
       "url": "https://www.gstatic.com/generate_204",
       "interval": "10m",
       "idle_timeout": "50m",
-      "tolerance": 50,
+      "tolerance": 30,
       "interrupt_exist_connections": false
     },
     {
@@ -601,7 +592,7 @@
       "url": "https://www.gstatic.com/generate_204",
       "interval": "10m",
       "idle_timeout": "50m",
-      "tolerance": 50,
+      "tolerance": 30,
       "interrupt_exist_connections": false
     },
     {
@@ -611,7 +602,7 @@
       "url": "https://www.gstatic.com/generate_204",
       "interval": "10m",
       "idle_timeout": "50m",
-      "tolerance": 50,
+      "tolerance": 30,
       "interrupt_exist_connections": false
     },
     {
@@ -621,7 +612,7 @@
       "url": "https://www.gstatic.com/generate_204",
       "interval": "10m",
       "idle_timeout": "50m",
-      "tolerance": 50,
+      "tolerance": 30,
       "interrupt_exist_connections": false
     },
     {
@@ -629,7 +620,7 @@
       "type": "selector",
       "outbounds": [
         "direct",
-        "proxy",
+        "all-auto",
         "hk",
         "hk-auto",
         "tw",
@@ -640,8 +631,7 @@
         "sg-auto",
         "us",
         "us-auto",
-        "all",
-        "all-auto"
+        "all"
       ],
       "default": "direct",
       "interrupt_exist_connections": false
@@ -658,11 +648,10 @@
       "address": [
         "172.19.0.0/30"
       ],
-      "mtu": 9000,
+      "mtu": 1500,
       "stack": "mixed",
       "auto_route": true,
       "strict_route": true,
-      "endpoint_independent_nat": true,
       "udp_timeout": "2m",
       "platform": {
         "http_proxy": {
@@ -688,9 +677,7 @@
     },
     "cache_file": {
       "enabled": true,
-      "store_fakeip": true,
-      "store_rdrc": true,
-      "rdrc_timeout": "3d"
+      "store_fakeip": true
     }
   }
 }
