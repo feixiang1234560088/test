@@ -1,0 +1,685 @@
+{
+  "log": {
+    "disabled": true,
+    "level": "error",
+    "timestamp": true
+  },
+  "dns": {
+    "servers": [
+      {
+        "tag": "google",
+        "type": "h3",
+        "server": "8.8.8.8",
+        "detour": "proxy"
+      },
+      {
+        "tag": "ali",
+        "type": "udp",
+        "server": "223.5.5.5"
+      },
+      {
+        "tag": "ali-doh",
+        "type": "https",
+        "server": "223.5.5.5",
+        "server_port": 443
+      },
+      {
+        "tag": "fakeip",
+        "type": "fakeip",
+        "inet4_range": "198.18.0.0/15"
+      }
+    ],
+    "rules": [
+      {
+        "clash_mode": "Direct",
+        "server": "ali"
+      },
+      {
+        "clash_mode": "Global",
+        "server": "fakeip"
+      },
+      {
+        "query_type": "HTTPS",
+        "action": "reject"
+      },
+      {
+        "query_type": "AAAA",
+        "action": "reject"
+      },
+      {
+        "rule_set": "cn_domain",
+        "server": "ali"
+      },
+      {
+        "query_type": "A",
+        "server": "fakeip",
+        "rewrite_ttl": 1
+      }
+    ],
+    "final": "google",
+    "strategy": "prefer_ipv4",
+    "cache_capacity": 500,
+    "optimistic": true
+  },
+  "route": {
+    "default_domain_resolver": {
+      "server": "ali",
+      "strategy": "ipv4_only"
+    },
+    "rules": [
+      {
+        "action": "sniff",
+        "sniffer": [
+          "http",
+          "tls",
+          "quic",
+          "dns"
+        ],
+        "timeout": "150ms"
+      },
+      {
+        "type": "logical",
+        "mode": "or",
+        "rules": [
+          { "port": 53 },
+          { "protocol": "dns" }
+        ],
+        "action": "hijack-dns"
+      },
+      {
+        "ip_is_private": true,
+        "outbound": "direct"
+      },
+      {
+        "clash_mode": "Global",
+        "outbound": "GLOBAL"
+      },
+      {
+        "clash_mode": "Direct",
+        "outbound": "direct"
+      },
+      {
+        "rule_set": "cn_domain",
+        "outbound": "CN"
+      },
+      {
+        "rule_set": "cn_ip",
+        "outbound": "CN"
+      },
+      {
+        "rule_set": "bilibili_domain",
+        "outbound": "Bilibili"
+      },
+      {
+        "rule_set": "netflix_domain",
+        "outbound": "Netflix"
+      },
+      {
+        "rule_set": "bahamut_domain",
+        "outbound": "Bahamut"
+      },
+      {
+        "rule_set": "youtube_domain",
+        "outbound": "YouTube"
+      },
+      {
+        "rule_set": "openai_domain",
+        "outbound": "OpenAI"
+      },
+      {
+        "rule_set": "telegram_domain",
+        "outbound": "Telegram"
+      },
+      {
+        "rule_set": "google_domain",
+        "outbound": "Google"
+      },
+      {
+        "rule_set": "apple_domain",
+        "outbound": "Apple"
+      },
+      {
+        "rule_set": "proxy_domain",
+        "outbound": "proxy"
+      },
+      {
+        "action": "resolve",
+        "strategy": "prefer_ipv4"
+      },
+      {
+        "rule_set": "netflix_ip",
+        "outbound": "Netflix"
+      },
+      {
+        "rule_set": "telegram_ip",
+        "outbound": "Telegram"
+      },
+      {
+        "rule_set": "google_ip",
+        "outbound": "Google"
+      },
+      {
+        "rule_set": "apple_ip",
+        "outbound": "Apple"
+      }
+    ],
+    "rule_set": [
+      {
+        "tag": "apple_ip",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://ghfast.top/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/sing/geo-lite/geoip/apple.srs",
+        "download_detour": "direct",
+        "update_interval": "7d"
+      },
+      {
+        "tag": "apple_domain",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://ghfast.top/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/sing/geo-lite/geosite/apple.srs",
+        "download_detour": "direct",
+        "update_interval": "7d"
+      },
+      {
+        "tag": "bahamut_domain",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://ghfast.top/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/sing/geo-lite/geosite/bahamut.srs",
+        "download_detour": "direct",
+        "update_interval": "7d"
+      },
+      {
+        "tag": "bilibili_domain",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://ghfast.top/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/sing/geo-lite/geosite/bilibili.srs",
+        "download_detour": "direct",
+        "update_interval": "7d"
+      },
+      {
+        "tag": "cn_ip",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://ghfast.top/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/sing/geo/geoip/cn.srs",
+        "download_detour": "direct",
+        "update_interval": "7d"
+      },
+      {
+        "tag": "cn_domain",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://ghfast.top/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/sing/geo-lite/geosite/cn.srs",
+        "download_detour": "direct",
+        "update_interval": "7d"
+      },
+      {
+        "tag": "google_ip",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://ghfast.top/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/sing/geo-lite/geoip/google.srs",
+        "download_detour": "direct",
+        "update_interval": "7d"
+      },
+      {
+        "tag": "google_domain",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://ghfast.top/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/sing/geo-lite/geosite/google.srs",
+        "download_detour": "direct",
+        "update_interval": "7d"
+      },
+      {
+        "tag": "netflix_ip",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://ghfast.top/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/sing/geo-lite/geoip/netflix.srs",
+        "download_detour": "direct",
+        "update_interval": "7d"
+      },
+      {
+        "tag": "netflix_domain",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://ghfast.top/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/sing/geo-lite/geosite/netflix.srs",
+        "download_detour": "direct",
+        "update_interval": "7d"
+      },
+      {
+        "tag": "openai_domain",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://ghfast.top/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/sing/geo/geosite/openai.srs",
+        "download_detour": "direct",
+        "update_interval": "7d"
+      },
+      {
+        "tag": "proxy_domain",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://ghfast.top/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/sing/geo/geosite/geolocation-!cn.srs",
+        "download_detour": "direct",
+        "update_interval": "7d"
+      },
+      {
+        "tag": "telegram_ip",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://ghfast.top/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/sing/geo-lite/geoip/telegram.srs",
+        "download_detour": "direct",
+        "update_interval": "7d"
+      },
+      {
+        "tag": "telegram_domain",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://ghfast.top/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/sing/geo-lite/geosite/telegram.srs",
+        "download_detour": "direct",
+        "update_interval": "7d"
+      },
+      {
+        "tag": "youtube_domain",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://ghfast.top/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/sing/geo-lite/geosite/youtube.srs",
+        "download_detour": "direct",
+        "update_interval": "7d"
+      }
+    ],
+    "final": "final",
+    "auto_detect_interface": true
+  },
+  "outbounds": [
+    {
+      "tag": "proxy",
+      "type": "selector",
+      "outbounds": [
+        "all-auto",
+        "hk",
+        "hk-auto",
+        "tw",
+        "tw-auto",
+        "jp",
+        "jp-auto",
+        "sg",
+        "sg-auto",
+        "us",
+        "us-auto",
+        "all",
+        "direct"
+      ],
+      "default": "all-auto",
+      "interrupt_exist_connections": true
+    },
+    {
+      "tag": "Google",
+      "type": "selector",
+      "outbounds": [
+        "all-auto",
+        "direct",
+        "hk",
+        "hk-auto",
+        "tw",
+        "tw-auto",
+        "jp",
+        "jp-auto",
+        "sg",
+        "sg-auto",
+        "us",
+        "us-auto",
+        "all"
+      ],
+      "default": "all-auto",
+      "interrupt_exist_connections": true
+    },
+    {
+      "tag": "Apple",
+      "type": "selector",
+      "outbounds": [
+        "direct",
+        "all-auto",
+        "hk",
+        "hk-auto",
+        "tw",
+        "tw-auto",
+        "jp",
+        "jp-auto",
+        "sg",
+        "sg-auto",
+        "us",
+        "us-auto",
+        "all"
+      ],
+      "default": "direct",
+      "interrupt_exist_connections": true
+    },
+    {
+      "tag": "Telegram",
+      "type": "selector",
+      "outbounds": [
+        "all-auto",
+        "direct",
+        "hk",
+        "hk-auto",
+        "tw",
+        "tw-auto",
+        "jp",
+        "jp-auto",
+        "sg",
+        "sg-auto",
+        "us",
+        "us-auto",
+        "all"
+      ],
+      "default": "all-auto",
+      "interrupt_exist_connections": true
+    },
+    {
+      "tag": "Bilibili",
+      "type": "selector",
+      "outbounds": [
+        "direct",
+        "all-auto",
+        "hk",
+        "hk-auto",
+        "tw",
+        "tw-auto",
+        "jp",
+        "jp-auto",
+        "sg",
+        "sg-auto",
+        "us",
+        "us-auto",
+        "all"
+      ],
+      "default": "direct",
+      "interrupt_exist_connections": true
+    },
+    {
+      "tag": "Netflix",
+      "type": "selector",
+      "outbounds": [
+        "all-auto",
+        "direct",
+        "hk",
+        "hk-auto",
+        "tw",
+        "tw-auto",
+        "jp",
+        "jp-auto",
+        "sg",
+        "sg-auto",
+        "us",
+        "us-auto",
+        "all"
+      ],
+      "default": "all-auto",
+      "interrupt_exist_connections": true
+    },
+    {
+      "tag": "Bahamut",
+      "type": "selector",
+      "outbounds": [
+        "all-auto",
+        "tw",
+        "tw-auto",
+        "direct",
+        "hk",
+        "hk-auto",
+        "jp",
+        "jp-auto",
+        "sg",
+        "sg-auto",
+        "us",
+        "us-auto",
+        "all"
+      ],
+      "default": "tw-auto",
+      "interrupt_exist_connections": true
+    },
+    {
+      "tag": "YouTube",
+      "type": "selector",
+      "outbounds": [
+        "all-auto",
+        "direct",
+        "hk",
+        "hk-auto",
+        "tw",
+        "tw-auto",
+        "jp",
+        "jp-auto",
+        "sg",
+        "sg-auto",
+        "us",
+        "us-auto",
+        "all"
+      ],
+      "default": "all-auto",
+      "interrupt_exist_connections": true
+    },
+    {
+      "tag": "OpenAI",
+      "type": "selector",
+      "outbounds": [
+        "us-auto",
+        "jp-auto",
+        "sg-auto",
+        "all-auto",
+        "direct",
+        "hk",
+        "hk-auto",
+        "tw",
+        "tw-auto",
+        "jp",
+        "sg",
+        "us",
+        "all"
+      ],
+      "default": "us-auto",
+      "interrupt_exist_connections": true
+    },
+    {
+      "tag": "CN",
+      "type": "selector",
+      "outbounds": [
+        "direct",
+        "all-auto",
+        "hk",
+        "hk-auto",
+        "tw",
+        "tw-auto",
+        "jp",
+        "jp-auto",
+        "sg",
+        "sg-auto",
+        "us",
+        "us-auto",
+        "all"
+      ],
+      "default": "direct",
+      "interrupt_exist_connections": true
+    },
+    {
+      "tag": "final",
+      "type": "selector",
+      "outbounds": [
+        "all-auto",
+        "direct",
+        "hk",
+        "hk-auto",
+        "tw",
+        "tw-auto",
+        "jp",
+        "jp-auto",
+        "sg",
+        "sg-auto",
+        "us",
+        "us-auto",
+        "all"
+      ],
+      "default": "all-auto",
+      "interrupt_exist_connections": true
+    },
+    {
+      "tag": "hk",
+      "type": "selector",
+      "outbounds": [],
+      "interrupt_exist_connections": true
+    },
+    {
+      "tag": "tw",
+      "type": "selector",
+      "outbounds": [],
+      "interrupt_exist_connections": true
+    },
+    {
+      "tag": "jp",
+      "type": "selector",
+      "outbounds": [],
+      "interrupt_exist_connections": true
+    },
+    {
+      "tag": "sg",
+      "type": "selector",
+      "outbounds": [],
+      "interrupt_exist_connections": true
+    },
+    {
+      "tag": "us",
+      "type": "selector",
+      "outbounds": [],
+      "interrupt_exist_connections": true
+    },
+    {
+      "tag": "all",
+      "type": "selector",
+      "outbounds": [],
+      "interrupt_exist_connections": true
+    },
+    {
+      "tag": "hk-auto",
+      "type": "urltest",
+      "outbounds": [],
+      "url": "https://www.gstatic.com/generate_204",
+      "interval": "3m",
+      "idle_timeout": "30m",
+      "tolerance": 30,
+      "interrupt_exist_connections": true
+    },
+    {
+      "tag": "tw-auto",
+      "type": "urltest",
+      "outbounds": [],
+      "url": "https://www.gstatic.com/generate_204",
+      "interval": "3m",
+      "idle_timeout": "30m",
+      "tolerance": 30,
+      "interrupt_exist_connections": true
+    },
+    {
+      "tag": "jp-auto",
+      "type": "urltest",
+      "outbounds": [],
+      "url": "https://www.gstatic.com/generate_204",
+      "interval": "3m",
+      "idle_timeout": "30m",
+      "tolerance": 30,
+      "interrupt_exist_connections": true
+    },
+    {
+      "tag": "sg-auto",
+      "type": "urltest",
+      "outbounds": [],
+      "url": "https://www.gstatic.com/generate_204",
+      "interval": "3m",
+      "idle_timeout": "30m",
+      "tolerance": 30,
+      "interrupt_exist_connections": true
+    },
+    {
+      "tag": "us-auto",
+      "type": "urltest",
+      "outbounds": [],
+      "url": "https://www.gstatic.com/generate_204",
+      "interval": "3m",
+      "idle_timeout": "30m",
+      "tolerance": 30,
+      "interrupt_exist_connections": true
+    },
+    {
+      "tag": "all-auto",
+      "type": "urltest",
+      "outbounds": [],
+      "url": "https://www.gstatic.com/generate_204",
+      "interval": "3m",
+      "idle_timeout": "30m",
+      "tolerance": 30,
+      "interrupt_exist_connections": true
+    },
+    {
+      "tag": "GLOBAL",
+      "type": "selector",
+      "outbounds": [
+        "direct",
+        "all-auto",
+        "hk",
+        "hk-auto",
+        "tw",
+        "tw-auto",
+        "jp",
+        "jp-auto",
+        "sg",
+        "sg-auto",
+        "us",
+        "us-auto",
+        "all"
+      ],
+      "default": "direct",
+      "interrupt_exist_connections": true
+    },
+    {
+      "tag": "direct",
+      "type": "direct"
+    }
+  ],
+  "inbounds": [
+    {
+      "type": "tun",
+      "tag": "tun-in",
+      "address": [
+        "172.19.0.1/30"
+      ],
+      "mtu": 9000,
+      "stack": "system",
+      "auto_route": true,
+      "strict_route": true,
+      "udp_timeout": "2m",
+      "platform": {
+        "http_proxy": {
+          "enabled": true,
+          "server": "127.0.0.1",
+          "server_port": 7890
+        }
+      }
+    },
+    {
+      "type": "mixed",
+      "tag": "mixed-in",
+      "listen": "127.0.0.1",
+      "listen_port": 7890
+    }
+  ],
+  "experimental": {
+    "clash_api": {
+      "external_controller": "127.0.0.1:9090",
+      "external_ui": "ui",
+      "external_ui_download_url": "https://ghfast.top/https://github.com/MetaCubeX/metacubexd/archive/refs/heads/gh-pages.zip",
+      "external_ui_download_detour": "direct"
+    },
+    "cache_file": {
+      "enabled": true,
+      "store_fakeip": true,
+      "store_dns": false
+    }
+  }
+}
