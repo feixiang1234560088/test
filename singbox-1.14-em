@@ -134,8 +134,8 @@
         "outbound": "🎬 Netflix"
       },
       {
-        "rule_set": "bahamut_domain",
-        "outbound": "🐉 Bahamut"
+        "rule_set": "twitter_domain",
+        "outbound": "✖️ Twitter"
       },
       {
         "rule_set": "youtube_domain",
@@ -151,7 +151,7 @@
       },
       {
         "rule_set": "google_domain",
-        "outbound": "🔍 Google"
+        "outbound": "🧲 Google"
       },
       {
         "rule_set": "apple_domain",
@@ -179,7 +179,7 @@
       },
       {
         "rule_set": "google_ip",
-        "outbound": "🔍 Google"
+        "outbound": "🧲 Google"
       },
       {
         "rule_set": "apple_ip",
@@ -204,10 +204,10 @@
         "update_interval": "7d"
       },
       {
-        "tag": "bahamut_domain",
+        "tag": "twitter_domain",
         "type": "remote",
         "format": "binary",
-        "url": "https://ghfast.top/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/sing/geo-lite/geosite/bahamut.srs",
+        "url": "https://ghfast.top/https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/sing/geo-lite/geosite/twitter.srs",
         "download_detour": "🎯 Direct",
         "update_interval": "7d"
       },
@@ -363,7 +363,7 @@
       "interrupt_exist_connections": true
     },
     {
-      "tag": "🔍 Google",
+      "tag": "🧲 Google",
       "type": "selector",
       "outbounds": [
         "🚀 ALL-Auto",
@@ -468,7 +468,7 @@
       "interrupt_exist_connections": true
     },
     {
-      "tag": "🐉 Bahamut",
+      "tag": "✖️ Twitter",
       "type": "selector",
       "outbounds": [
         "🚀 ALL-Auto",
