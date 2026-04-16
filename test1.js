@@ -17,8 +17,8 @@ let proxies = await produceArtifact({
 config.outbounds.push(...proxies)
 
 config.outbounds.map(i => {
-  // 增加了美化后的名字：'🌍 ALL', '⚡ ALL-Auto', '🚀 Proxy', '🌐 Global' 等
-  if (['all', 'all-auto', 'proxy', 'GLOBAL', '🌍 ALL', '⚡ ALL-Auto', '🚀 Proxy', '🌐 Global'].includes(i.tag)) {
+  // 增加了美化后的名字：'🌍 ALL', '⚡ ALL-Auto', '🛜 Proxy', '🌐 Global' 等
+  if (['all', 'all-auto', 'proxy', 'GLOBAL', '🌍 ALL', '⚡ ALL-Auto', '🛜 Proxy', '🌐 Global'].includes(i.tag)) {
     if (i.outbounds) i.outbounds.push(...getTags(proxies))
   }
   if (['hk', 'hk-auto', '🇭🇰 HK', '⚡ HK-Auto'].includes(i.tag)) {
