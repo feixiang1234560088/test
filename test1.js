@@ -17,23 +17,23 @@ let proxies = await produceArtifact({
 config.outbounds.push(...proxies)
 
 config.outbounds.map(i => {
-  // 增加了美化后的名字：'🌍 ALL', '⚡ ALL-Auto', '🛜 Proxy', '🌐 Global' 等
-  if (['all', 'all-auto', 'proxy', 'GLOBAL', '🌍 ALL', '⚡ ALL-Auto', '🛜 Proxy', '🌐 Global'].includes(i.tag)) {
+  // 增加了美化后的名字：'🌍 ALL', '🚀 ALL-Auto', '🛜 Proxy', '🌐 Global' 等
+  if (['all', 'all-auto', 'proxy', 'GLOBAL', '🌍 ALL', '🚀 ALL-Auto', '🛜 Proxy', '🌐 Global'].includes(i.tag)) {
     if (i.outbounds) i.outbounds.push(...getTags(proxies))
   }
-  if (['hk', 'hk-auto', '🇭🇰 HK', '⚡ HK-Auto'].includes(i.tag)) {
+  if (['hk', 'hk-auto', '🇭🇰 HK', '🚀 HK-Auto'].includes(i.tag)) {
     if (i.outbounds) i.outbounds.push(...getTags(proxies, /港|hk|hongkong|hong kong|🇭🇰/i))
   }
-  if (['tw', 'tw-auto', '🇹🇼 TW', '⚡ TW-Auto'].includes(i.tag)) {
+  if (['tw', 'tw-auto', '🇼🇸 TW', '🚀 TW-Auto'].includes(i.tag)) {
     if (i.outbounds) i.outbounds.push(...getTags(proxies, /台|tw|taiwan|🇹🇼/i))
   }
-  if (['jp', 'jp-auto', '🇯🇵 JP', '⚡ JP-Auto'].includes(i.tag)) {
+  if (['jp', 'jp-auto', '🇯🇵 JP', '🚀 JP-Auto'].includes(i.tag)) {
     if (i.outbounds) i.outbounds.push(...getTags(proxies, /日本|jp|japan|🇯🇵/i))
   }
-  if (['sg', 'sg-auto', '🇸🇬 SG', '⚡ SG-Auto'].includes(i.tag)) {
+  if (['sg', 'sg-auto', '🇸🇬 SG', '🚀 SG-Auto'].includes(i.tag)) {
     if (i.outbounds) i.outbounds.push(...getTags(proxies, /^(?!.*(?:us)).*(新|sg|singapore|🇸🇬)/i))
   }
-  if (['us', 'us-auto', '🇺🇸 US', '⚡ US-Auto'].includes(i.tag)) {
+  if (['us', 'us-auto', '🇺🇸 US', '🚀 US-Auto'].includes(i.tag)) {
     if (i.outbounds) i.outbounds.push(...getTags(proxies, /美|us|unitedstates|united states|🇺🇸/i))
   }
 })
