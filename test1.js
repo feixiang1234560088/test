@@ -30,8 +30,8 @@ config.outbounds.map(i => {
   }
   
   // 匹配台湾节点 -> 塞入 TW 和 TW-Auto 组
-  if (['tw', 'tw-auto', '🇹🇼 TW', '🚀 TW-Auto'].includes(i.tag)) {
-    if (i.outbounds) i.outbounds.push(...getTags(proxies, /台|tw|taiwan|🇹🇼/i))
+  if (['tw', 'tw-auto', '🇼🇸 TW', '🚀 TW-Auto'].includes(i.tag)) {
+    if (i.outbounds) i.outbounds.push(...getTags(proxies, /台|tw|taiwan|🇼🇸/i))
   }
   
   // 匹配日本节点 -> 塞入 JP 和 JP-Auto 组 (补充了 tokyo, osaka 提高匹配率)
