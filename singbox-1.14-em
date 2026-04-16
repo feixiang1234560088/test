@@ -16,7 +16,7 @@
         "tag": "google",
         "type": "h3",
         "server": "8.8.8.8",
-        "detour": "🚀 Proxy"
+        "detour": "🛜 Proxy"
       },
       {
         "tag": "ali",
@@ -163,7 +163,7 @@
       },
       {
         "rule_set": "proxy_domain",
-        "outbound": "🚀 Proxy"
+        "outbound": "🛜 Proxy"
       },
       {
         "action": "resolve",
@@ -321,7 +321,7 @@
   },
   "outbounds": [
     {
-      "tag": "🚀 Proxy",
+      "tag": "🛜 Proxy",
       "type": "selector",
       "outbounds": [
         "🚀 ALL-Auto",
@@ -359,7 +359,7 @@
         "🚀 US-Auto",
         "🌍 ALL"
       ],
-      "default": "🚀 Proxy",
+      "default": "🛜 Proxy",
       "interrupt_exist_connections": true
     },
     {
