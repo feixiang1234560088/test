@@ -46,12 +46,6 @@
           "beacons2.gvt2.com",
           "beacons3.gvt2.com",
           "tracking.miui.com"
-          "ad.api.moji.com",
-          "ad.moji.com",
-          "stat.moji.com",
-          "log.moji.com",
-          "cdn.ad.moji.com",
-          "fds.api.moji.com"
         ],
         "action": "reject"
       },
