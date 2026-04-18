@@ -10,6 +10,12 @@
     "server_port": 123,
     "interval": "30m"
   },
+  "http_clients": [
+    {
+      "tag": "direct-http",
+      "detour": "direct"
+    }
+  ],
   "dns": {
     "servers": [
       {
@@ -22,12 +28,6 @@
         "tag": "ali",
         "type": "udp",
         "server": "223.5.5.5"
-      },
-      {
-        "tag": "ali-doh",
-        "type": "https",
-        "server": "223.5.5.5",
-        "server_port": 443
       },
       {
         "tag": "fakeip",
@@ -71,16 +71,16 @@
       },
       {
         "query_type": "A",
-        "server": "fakeip",
-        "rewrite_ttl": 1
+        "server": "fakeip"
       }
     ],
     "final": "google",
     "strategy": "prefer_ipv4",
-    "cache_capacity": 500,
+    "cache_capacity": 4096,
     "optimistic": true
   },
   "route": {
+    "default_http_client": "direct-http",
     "default_domain_resolver": {
       "server": "ali",
       "strategy": "ipv4_only"
@@ -134,8 +134,12 @@
         "outbound": "Netflix"
       },
       {
-        "rule_set": "bahamut_domain",
-        "outbound": "Bahamut"
+        "rule_set": "crypto_domain",
+        "outbound": "Crypto"
+      },
+      {
+        "rule_set": "twitter_domain",
+        "outbound": "Twitter"
       },
       {
         "rule_set": "youtube_domain",
@@ -187,120 +191,112 @@
         "tag": "apple_ip",
         "type": "remote",
         "format": "binary",
-        "url": "https://ghfast.top/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/sing/geo-lite/geoip/apple.srs",
-        "download_detour": "direct",
+        "url": "https://github.688660.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/sing/geo-lite/geoip/apple.srs",
         "update_interval": "7d"
       },
       {
         "tag": "apple_domain",
         "type": "remote",
         "format": "binary",
-        "url": "https://ghfast.top/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/sing/geo-lite/geosite/apple.srs",
-        "download_detour": "direct",
+        "url": "https://github.688660.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/sing/geo-lite/geosite/apple.srs",
         "update_interval": "7d"
       },
       {
-        "tag": "bahamut_domain",
+        "tag": "twitter_domain",
         "type": "remote",
         "format": "binary",
-        "url": "https://ghfast.top/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/sing/geo-lite/geosite/bahamut.srs",
-        "download_detour": "direct",
+        "url": "https://github.688660.xyz/https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/sing/geo-lite/geosite/twitter.srs",
+        "update_interval": "7d"
+      },
+      {
+        "tag": "crypto_domain",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://github.688660.xyz/https://github.com/senshinya/singbox_ruleset/raw/refs/heads/main/rule/Crypto/Crypto.srs",
         "update_interval": "7d"
       },
       {
         "tag": "bilibili_domain",
         "type": "remote",
         "format": "binary",
-        "url": "https://ghfast.top/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/sing/geo-lite/geosite/bilibili.srs",
-        "download_detour": "direct",
+        "url": "https://github.688660.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/sing/geo-lite/geosite/bilibili.srs",
         "update_interval": "7d"
       },
       {
         "tag": "cn_ip",
         "type": "remote",
         "format": "binary",
-        "url": "https://ghfast.top/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/sing/geo/geoip/cn.srs",
-        "download_detour": "direct",
+        "url": "https://github.688660.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/sing/geo/geoip/cn.srs",
         "update_interval": "7d"
       },
       {
         "tag": "cn_domain",
         "type": "remote",
         "format": "binary",
-        "url": "https://ghfast.top/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/sing/geo-lite/geosite/cn.srs",
-        "download_detour": "direct",
+        "url": "https://github.688660.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/sing/geo-lite/geosite/cn.srs",
         "update_interval": "7d"
       },
       {
         "tag": "google_ip",
         "type": "remote",
         "format": "binary",
-        "url": "https://ghfast.top/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/sing/geo-lite/geoip/google.srs",
-        "download_detour": "direct",
+        "url": "https://github.688660.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/sing/geo-lite/geoip/google.srs",
         "update_interval": "7d"
       },
       {
         "tag": "google_domain",
         "type": "remote",
         "format": "binary",
-        "url": "https://ghfast.top/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/sing/geo-lite/geosite/google.srs",
-        "download_detour": "direct",
+        "url": "https://github.688660.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/sing/geo-lite/geosite/google.srs",
         "update_interval": "7d"
       },
       {
         "tag": "netflix_ip",
         "type": "remote",
         "format": "binary",
-        "url": "https://ghfast.top/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/sing/geo-lite/geoip/netflix.srs",
-        "download_detour": "direct",
+        "url": "https://github.688660.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/sing/geo-lite/geoip/netflix.srs",
         "update_interval": "7d"
       },
       {
         "tag": "netflix_domain",
         "type": "remote",
         "format": "binary",
-        "url": "https://ghfast.top/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/sing/geo-lite/geosite/netflix.srs",
-        "download_detour": "direct",
+        "url": "https://github.688660.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/sing/geo-lite/geosite/netflix.srs",
         "update_interval": "7d"
       },
       {
         "tag": "openai_domain",
         "type": "remote",
         "format": "binary",
-        "url": "https://ghfast.top/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/sing/geo/geosite/openai.srs",
-        "download_detour": "direct",
+        "url": "https://github.688660.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/sing/geo/geosite/openai.srs",
         "update_interval": "7d"
       },
       {
         "tag": "proxy_domain",
         "type": "remote",
         "format": "binary",
-        "url": "https://ghfast.top/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/sing/geo/geosite/geolocation-!cn.srs",
-        "download_detour": "direct",
+        "url": "https://github.688660.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/sing/geo/geosite/geolocation-!cn.srs",
         "update_interval": "7d"
       },
       {
         "tag": "telegram_ip",
         "type": "remote",
         "format": "binary",
-        "url": "https://ghfast.top/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/sing/geo-lite/geoip/telegram.srs",
-        "download_detour": "direct",
+        "url": "https://github.688660.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/sing/geo-lite/geoip/telegram.srs",
         "update_interval": "7d"
       },
       {
         "tag": "telegram_domain",
         "type": "remote",
         "format": "binary",
-        "url": "https://ghfast.top/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/sing/geo-lite/geosite/telegram.srs",
-        "download_detour": "direct",
+        "url": "https://github.688660.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/sing/geo-lite/geosite/telegram.srs",
         "update_interval": "7d"
       },
       {
         "tag": "youtube_domain",
         "type": "remote",
         "format": "binary",
-        "url": "https://ghfast.top/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/sing/geo-lite/geosite/youtube.srs",
-        "download_detour": "direct",
+        "url": "https://github.688660.xyz/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/sing/geo-lite/geosite/youtube.srs",
         "update_interval": "7d"
       }
     ],
@@ -326,7 +322,7 @@
         "all",
         "direct"
       ],
-      "default": "all-auto",
+      "default": "jp-auto",
       "interrupt_exist_connections": true
     },
     {
@@ -347,7 +343,7 @@
         "us-auto",
         "all"
       ],
-      "default": "all-auto",
+      "default": "jp-auto",
       "interrupt_exist_connections": true
     },
     {
@@ -431,11 +427,11 @@
         "us-auto",
         "all"
       ],
-      "default": "all-auto",
+      "default": "hk-auto",
       "interrupt_exist_connections": true
     },
     {
-      "tag": "Bahamut",
+      "tag": "Crypto",
       "type": "selector",
       "outbounds": [
         "all-auto",
@@ -456,6 +452,27 @@
       "interrupt_exist_connections": true
     },
     {
+      "tag": "Twitter",
+      "type": "selector",
+      "outbounds": [
+        "all-auto",
+        "tw",
+        "tw-auto",
+        "direct",
+        "hk",
+        "hk-auto",
+        "jp",
+        "jp-auto",
+        "sg",
+        "sg-auto",
+        "us",
+        "us-auto",
+        "all"
+      ],
+      "default": "hk-auto",
+      "interrupt_exist_connections": true
+    },
+    {
       "tag": "YouTube",
       "type": "selector",
       "outbounds": [
@@ -473,7 +490,7 @@
         "us-auto",
         "all"
       ],
-      "default": "all-auto",
+      "default": "jp-auto",
       "interrupt_exist_connections": true
     },
     {
@@ -494,7 +511,7 @@
         "us",
         "all"
       ],
-      "default": "us-auto",
+      "default": "jp-auto",
       "interrupt_exist_connections": true
     },
     {
@@ -536,7 +553,7 @@
         "us-auto",
         "all"
       ],
-      "default": "all-auto",
+      "default": "jp-auto",
       "interrupt_exist_connections": true
     },
     {
@@ -669,7 +686,7 @@
         "172.19.0.1/30"
       ],
       "mtu": 1420,
-      "stack": "system",
+      "stack": "mixed",
       "auto_route": true,
       "strict_route": true,
       "udp_timeout": "2m",
@@ -692,13 +709,13 @@
     "clash_api": {
       "external_controller": "127.0.0.1:9090",
       "external_ui": "ui",
-      "external_ui_download_url": "https://ghfast.top/https://github.com/MetaCubeX/metacubexd/archive/refs/heads/gh-pages.zip",
+      "external_ui_download_url": "https://github.688660.xyz/https://github.com/MetaCubeX/metacubexd/archive/refs/heads/gh-pages.zip",
       "external_ui_download_detour": "direct"
     },
     "cache_file": {
       "enabled": true,
       "store_fakeip": true,
-      "store_dns": false
+      "store_dns": true
     }
   }
 }
