@@ -12,8 +12,7 @@
   },
   "http_clients": [
     {
-      "tag": "direct-http",
-      "detour": "direct"
+      "tag": "direct-http"
     }
   ],
   "dns": {
@@ -22,6 +21,7 @@
         "tag": "google",
         "type": "h3",
         "server": "8.8.8.8",
+        "server_port": 443,
         "detour": "proxy"
       },
       {
@@ -76,8 +76,11 @@
     ],
     "final": "google",
     "strategy": "prefer_ipv4",
-    "cache_capacity": 4096,
-    "optimistic": true
+    "cache_capacity": 8192,
+    "optimistic": {
+      "enabled": true,
+      "timeout": "3d"
+    }
   },
   "route": {
     "default_http_client": "direct-http",
@@ -128,6 +131,10 @@
       {
         "rule_set": "bilibili_domain",
         "outbound": "Bilibili"
+      },
+      {
+        "domain_suffix": ["msx.com", "mystonks.org"],
+        "outbound": "Msx"
       },
       {
         "rule_set": "netflix_domain",
@@ -410,6 +417,27 @@
       "interrupt_exist_connections": true
     },
     {
+      "tag": "Msx",
+      "type": "selector",
+      "outbounds": [
+        "all-auto",
+        "direct",
+        "hk",
+        "hk-auto",
+        "tw",
+        "tw-auto",
+        "jp",
+        "jp-auto",
+        "sg",
+        "sg-auto",
+        "us",
+        "us-auto",
+        "all"
+      ],
+      "default": "all-auto",
+      "interrupt_exist_connections": true
+    },
+    {
       "tag": "Netflix",
       "type": "selector",
       "outbounds": [
@@ -683,7 +711,7 @@
       "type": "tun",
       "tag": "tun-in",
       "address": [
-        "172.19.0.1/30"
+        "172.19.0.1/28"
       ],
       "mtu": 1420,
       "stack": "mixed",
