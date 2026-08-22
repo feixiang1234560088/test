@@ -5,6 +5,26 @@ const compatible_outbound = {
   type: 'direct',
 }
 
+// ── TCP 保活 ────────────────────────────────────────────────
+// sing-box 默认空闲 5 分钟才发第一个保活包，间隔 75s。对不少运营商 NAT 来说
+// 太晚：表项被老化后连接静默死亡，下次用要等 TCP 重传退避约 20 秒才重建，
+// 表现就是「停一会儿再点，卡 20 秒」。改成 60s 首发 / 30s 间隔。
+// QUIC 系协议不走 TCP，这两个字段对它们无意义，跳过。
+const KEEPALIVE = { tcp_keep_alive: '60s', tcp_keep_alive_interval: '30s' }
+const UDP_TYPES = ['hysteria', 'hysteria2', 'tuic', 'wireguard']
+
+// ── 地区匹配 ────────────────────────────────────────────────
+// 除了国家名，也认常见城市名 —— 机场很多节点叫「东京」「洛杉矶」而不带国名，
+// 只匹配国名会让它们落不进地区分组，只能出现在 all 里。
+// us 用 \bus\b 而不是裸 us，否则 Russia / Australia / Business 都会被误判成美国。
+const REGION = {
+  hk: /港|hk|hongkong|hong ?kong|🇭🇰/i,
+  tw: /台|tw|taiwan|🇹🇼/i,
+  jp: /日本|东京|大阪|名古屋|jp|japan|tokyo|osaka|🇯🇵/i,
+  sg: /新|狮城|sg|singapore|🇸🇬/i,
+  us: /美|洛杉矶|圣何塞|硅谷|西雅图|达拉斯|凤凰城|\bus\b|usa|united ?states|los ?angeles|san ?jose|seattle|🇺🇸/i,
+}
+
 let compatible
 let config = JSON.parse($files[0])
 let proxies = await produceArtifact({
@@ -14,57 +34,38 @@ let proxies = await produceArtifact({
   produceType: 'internal',
 })
 
-// 1. 将所有抓取到的实体节点推入配置的 outbounds 数组末尾
-config.outbounds.push(...proxies)
-
-// 2. 根据正则匹配，将节点 tag 分发到你模板中带有 Emoji 的策略组里
-config.outbounds.map(i => {
-  // 匹配所有节点 -> 塞入 ALL 和 ALL-Auto 组
-  if (['all', 'all-auto', '🌍 ALL', '🚀 ALL-Auto'].includes(i.tag)) {
-    if (i.outbounds) i.outbounds.push(...getTags(proxies))
-  }
-  
-  // 匹配香港节点 -> 塞入 HK 和 HK-Auto 组
-  if (['hk', 'hk-auto', '🇭🇰 HK', '🚀 HK-Auto'].includes(i.tag)) {
-    if (i.outbounds) i.outbounds.push(...getTags(proxies, /港|hk|hongkong|hong kong|🇭🇰/i))
-  }
-  
-  // 匹配台湾节点 -> 塞入 TW 和 TW-Auto 组
-  if (['tw', 'tw-auto', '🇼🇸 TW', '🚀 TW-Auto'].includes(i.tag)) {
-    if (i.outbounds) i.outbounds.push(...getTags(proxies, /台|tw|taiwan|🇼🇸/i))
-  }
-  
-  // 匹配日本节点 -> 塞入 JP 和 JP-Auto 组 (补充了 tokyo, osaka 提高匹配率)
-  if (['jp', 'jp-auto', '🇯🇵 JP', '🚀 JP-Auto'].includes(i.tag)) {
-    if (i.outbounds) i.outbounds.push(...getTags(proxies, /日|jp|japan|tokyo|osaka|🇯🇵/i))
-  }
-  
-  // 匹配新加坡节点 -> 塞入 SG 和 SG-Auto 组 (排除了 us 字母，防止误判)
-  if (['sg', 'sg-auto', '🇸🇬 SG', '🚀 SG-Auto'].includes(i.tag)) {
-    if (i.outbounds) i.outbounds.push(...getTags(proxies, /^(?!.*(?:us)).*(新|sg|singapore|🇸🇬)/i))
-  }
-  
-  // 匹配美国节点 -> 塞入 US 和 US-Auto 组
-  if (['us', 'us-auto', '🇺🇸 US', '🚀 US-Auto'].includes(i.tag)) {
-    if (i.outbounds) i.outbounds.push(...getTags(proxies, /美|us|unitedstates|united states|🇺🇸/i))
-  }
+// 给每个基于 TCP 的节点出站注入保活
+proxies.forEach(p => {
+  if (p && !UDP_TYPES.includes(p.type)) Object.assign(p, KEEPALIVE)
 })
 
-// 3. 兜底容灾处理：如果某个地区的数组是空的（比如你机场没台湾节点），填入 COMPATIBLE (直连)，防止 sing-box 崩溃
+config.outbounds.push(...proxies)
+
+config.outbounds.forEach(i => {
+  if (!i.outbounds) return
+  // 注意：每个 tag 只能命中一次，否则节点会被重复添加
+  if (['all', 'all-auto', 'proxy', 'GLOBAL', 'Msx'].includes(i.tag)) {
+    i.outbounds.push(...getTags(proxies))
+  }
+  if (['hk', 'hk-auto'].includes(i.tag)) i.outbounds.push(...getTags(proxies, REGION.hk))
+  if (['tw', 'tw-auto'].includes(i.tag)) i.outbounds.push(...getTags(proxies, REGION.tw))
+  if (['jp', 'jp-auto'].includes(i.tag)) i.outbounds.push(...getTags(proxies, REGION.jp))
+  if (['sg', 'sg-auto'].includes(i.tag)) i.outbounds.push(...getTags(proxies, REGION.sg))
+  if (['us', 'us-auto'].includes(i.tag)) i.outbounds.push(...getTags(proxies, REGION.us))
+})
+
 config.outbounds.forEach(outbound => {
   if (Array.isArray(outbound.outbounds) && outbound.outbounds.length === 0) {
     if (!compatible) {
       config.outbounds.push(compatible_outbound)
       compatible = true
     }
-    outbound.outbounds.push(compatible_outbound.tag);
+    outbound.outbounds.push(compatible_outbound.tag)
   }
-});
+})
 
-// 输出最终的 JSON 字符串
 $content = JSON.stringify(config, null, 2)
 
-// 提取 Tag 的辅助函数
 function getTags(proxies, regex) {
   return (regex ? proxies.filter(p => regex.test(p.tag)) : proxies).map(p => p.tag)
 }
