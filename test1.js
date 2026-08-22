@@ -21,7 +21,7 @@ const REGION = {
   hk: /港|hk|hongkong|hong ?kong|🇭🇰/i,
   tw: /台|tw|taiwan|🇹🇼/i,
   jp: /日本|东京|大阪|名古屋|jp|japan|tokyo|osaka|🇯🇵/i,
-  sg: /新|狮城|sg|singapore|🇸🇬/i,
+  sg: /新|新加坡|狮城|sg|singapore|🇸🇬/i,
   us: /美|洛杉矶|圣何塞|硅谷|西雅图|达拉斯|凤凰城|\bus\b|usa|united ?states|los ?angeles|san ?jose|seattle|🇺🇸/i,
 }
 
