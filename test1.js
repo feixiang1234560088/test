@@ -5,13 +5,22 @@ const compatible_outbound = {
   type: 'direct',
 }
 
-// ── TCP 保活 ────────────────────────────────────────────────
-// sing-box 默认空闲 5 分钟才发第一个保活包，间隔 75s。对不少运营商 NAT 来说
-// 太晚：表项被老化后连接静默死亡，下次用要等 TCP 重传退避约 20 秒才重建，
-// 表现就是「停一会儿再点，卡 20 秒」。改成 60s 首发 / 30s 间隔。
-// QUIC 系协议不走 TCP，这两个字段对它们无意义，跳过。
-const KEEPALIVE = { tcp_keep_alive: '60s', tcp_keep_alive_interval: '30s' }
-const UDP_TYPES = ['hysteria', 'hysteria2', 'tuic', 'wireguard']
+// ── QUIC 接收窗口 ───────────────────────────────────────────
+// 只调缓冲区上限，不产生任何额外流量，不影响耗电。
+// 跨境链路 RTT 高，带宽时延积大，窗口太小会在填满后干等 ACK，限制吞吐。
+// 这两个值是上限，按需增长，空闲时不占内存。
+// 注意：不设 keep_alive_period —— 保活包会让手机基带频繁唤醒，费电。
+const QUIC_TUNE = {
+  stream_receive_window: '4 MB',
+  connection_receive_window: '8 MB',
+}
+const QUIC_TYPES = ['hysteria', 'hysteria2', 'tuic']
+
+// BBR 激进档：hy2 上下行留空时走 BBR，这个参数调它抢带宽的积极程度。
+// 仍然是 BBR（会响应拥塞信号），不是 Brutal 那种无视丢包硬发，风险可控。
+// 只有 hysteria2 支持这个字段，别给 tuic / hysteria v1 加。
+// 晚高峰要是反而更差，把 aggressive 改成 standard（默认值）即可。
+const HY2_TUNE = { bbr_profile: 'aggressive' }
 
 // ── 地区匹配 ────────────────────────────────────────────────
 // 除了国家名，也认常见城市名 —— 机场很多节点叫「东京」「洛杉矶」而不带国名，
@@ -21,7 +30,7 @@ const REGION = {
   hk: /港|hk|hongkong|hong ?kong|🇭🇰/i,
   tw: /台|tw|taiwan|🇹🇼/i,
   jp: /日本|东京|大阪|名古屋|jp|japan|tokyo|osaka|🇯🇵/i,
-  sg: /新|新加坡|狮城|sg|singapore|🇸🇬/i,
+  sg: /新|狮城|sg|singapore|🇸🇬/i,
   us: /美|洛杉矶|圣何塞|硅谷|西雅图|达拉斯|凤凰城|\bus\b|usa|united ?states|los ?angeles|san ?jose|seattle|🇺🇸/i,
 }
 
@@ -34,9 +43,11 @@ let proxies = await produceArtifact({
   produceType: 'internal',
 })
 
-// 给每个基于 TCP 的节点出站注入保活
+// QUIC 系协议加接收窗口；hysteria2 再加 BBR 档位；TCP 系不动
 proxies.forEach(p => {
-  if (p && !UDP_TYPES.includes(p.type)) Object.assign(p, KEEPALIVE)
+  if (!p) return
+  if (QUIC_TYPES.includes(p.type)) Object.assign(p, QUIC_TUNE)
+  if (p.type === 'hysteria2') Object.assign(p, HY2_TUNE)
 })
 
 config.outbounds.push(...proxies)
@@ -47,11 +58,13 @@ config.outbounds.forEach(i => {
   if (['all', 'all-auto', 'proxy', 'GLOBAL', 'Msx'].includes(i.tag)) {
     i.outbounds.push(...getTags(proxies))
   }
-  if (['hk', 'hk-auto'].includes(i.tag)) i.outbounds.push(...getTags(proxies, REGION.hk))
-  if (['tw', 'tw-auto'].includes(i.tag)) i.outbounds.push(...getTags(proxies, REGION.tw))
-  if (['jp', 'jp-auto'].includes(i.tag)) i.outbounds.push(...getTags(proxies, REGION.jp))
-  if (['sg', 'sg-auto'].includes(i.tag)) i.outbounds.push(...getTags(proxies, REGION.sg))
-  if (['us', 'us-auto'].includes(i.tag)) i.outbounds.push(...getTags(proxies, REGION.us))
+  // 地区分组：选择器额外把自家 -auto 放在首位。
+  // 一是「自动选最快」更顺手，二是某地区只有 1 个节点时，选择器不会因为
+  // 只剩一个选项而被客户端折叠隐藏（新加坡、美国就是这种情况）。
+  for (const r of ['hk', 'tw', 'jp', 'sg', 'us']) {
+    if (i.tag === r) i.outbounds.push(`${r}-auto`, ...getTags(proxies, REGION[r]))
+    else if (i.tag === `${r}-auto`) i.outbounds.push(...getTags(proxies, REGION[r]))
+  }
 })
 
 config.outbounds.forEach(outbound => {
