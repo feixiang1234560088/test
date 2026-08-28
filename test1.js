@@ -58,14 +58,13 @@ config.outbounds.forEach(i => {
   if (['all', 'all-auto', 'proxy', 'GLOBAL', 'Msx'].includes(i.tag)) {
     i.outbounds.push(...getTags(proxies))
   }
-  // 地区分组：选择器在节点之后追加自家 -auto。
-  // 放末尾而不是开头，是因为选择器默认选中第一项，显示的也是第一项的延迟；
-  // 若第一项是 -auto（分组套分组），客户端就不显示延迟了。
-  // 追加它的作用是让只有 1 个节点的地区（新加坡、美国）凑够两项，
-  // 不会因为「只剩一个选项」被客户端折叠隐藏。
+  // 地区分组：选择器和 -auto 都只装本地区的节点，互不嵌套。
+  // 注意别把 `${r}-auto` 塞进选择器里 —— 分组套分组会导致客户端不显示延迟，
+  // 想用自动选最快直接点顶部的 xx-auto 分组即可。
   for (const r of ['hk', 'tw', 'jp', 'sg', 'us']) {
-    if (i.tag === r) i.outbounds.push(...getTags(proxies, REGION[r]), `${r}-auto`)
-    else if (i.tag === `${r}-auto`) i.outbounds.push(...getTags(proxies, REGION[r]))
+    if (i.tag === r || i.tag === `${r}-auto`) {
+      i.outbounds.push(...getTags(proxies, REGION[r]))
+    }
   }
 })
 
