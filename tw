@@ -1,0 +1,51 @@
+// sing-box 台湾单分组填充脚本
+const { type, name } = $arguments
+
+// 台湾节点匹配：国名 + 常见城市/机房叫法
+const TW = /台|tw|taiwan|🇹🇼/i
+
+// QUIC 接收窗口：只是缓冲区上限，不产生额外流量、不影响耗电。
+// 跨境链路 RTT 高，窗口太小会在填满后干等 ACK，限制吞吐。
+const QUIC_TUNE = {
+  stream_receive_window: '4 MB',
+  connection_receive_window: '8 MB',
+}
+const QUIC_TYPES = ['hysteria', 'hysteria2', 'tuic']
+
+// BBR 激进档，只有 hysteria2 支持。效果不好就把 aggressive 改成 standard。
+const HY2_TUNE = { bbr_profile: 'aggressive' }
+
+let config = JSON.parse($files[0])
+let proxies = await produceArtifact({
+  name,
+  type: /^1$|col/i.test(type) ? 'collection' : 'subscription',
+  platform: 'sing-box',
+  produceType: 'internal',
+})
+
+// 只保留台湾节点
+const tw = proxies.filter(p => p && TW.test(p.tag))
+
+tw.forEach(p => {
+  if (QUIC_TYPES.includes(p.type)) Object.assign(p, QUIC_TUNE)
+  if (p.type === 'hysteria2') Object.assign(p, HY2_TUNE)
+})
+
+config.outbounds.push(...tw)
+
+const tags = tw.map(p => p.tag)
+config.outbounds.forEach(o => {
+  // tw-auto 只装节点；proxy 在 tw-auto / direct 之外也列出各节点，方便手动指定
+  if (o.tag === 'tw-auto') o.outbounds.push(...tags)
+  if (o.tag === 'proxy') o.outbounds.splice(1, 0, ...tags)
+})
+
+// 一个台湾节点都没匹配到时，避免出现空分组导致启动失败
+if (!tags.length) {
+  config.outbounds.push({ tag: 'COMPATIBLE', type: 'direct' })
+  config.outbounds.forEach(o => {
+    if (Array.isArray(o.outbounds) && o.outbounds.length === 0) o.outbounds.push('COMPATIBLE')
+  })
+}
+
+$content = JSON.stringify(config, null, 2)
