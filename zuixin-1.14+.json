@@ -1,0 +1,712 @@
+{
+  "$schema": "https://sing-box.sagernet.org/schema.json",
+  "log": {
+    "disabled": true,
+    "level": "error",
+    "timestamp": true
+  },
+  "ntp": {
+    "enabled": true,
+    "server": "ntp.aliyun.com",
+    "server_port": 123,
+    "interval": "30m"
+  },
+  "http_clients": [
+    {
+      "tag": "direct-http"
+    }
+  ],
+  "dns": {
+    "servers": [
+      {
+        "tag": "cloudflare",
+        "type": "h3",
+        "server": "1.1.1.1",
+        "server_port": 443,
+        "detour": "proxy",
+        "tls": {
+          "enabled": true,
+          "server_name": "cloudflare-dns.com"
+        }
+      },
+      {
+        "tag": "ali",
+        "type": "https",
+        "server": "223.5.5.5",
+        "server_port": 443,
+        "tls": {
+          "enabled": true,
+          "server_name": "dns.alidns.com"
+        }
+      },
+      {
+        "tag": "fakeip",
+        "type": "fakeip",
+        "inet4_range": "198.18.0.0/15"
+      }
+    ],
+    "rules": [
+      {
+        "domain_suffix": [
+          "app-measurement.com",
+          "hm.baidu.com",
+          "firebaselogging.googleapis.com",
+          "firebaselogging-pa.googleapis.com",
+          "beacons.gvt2.com",
+          "beacons2.gvt2.com",
+          "beacons3.gvt2.com",
+          "tracking.miui.com"
+        ],
+        "action": "reject"
+      },
+      {
+        "clash_mode": "Direct",
+        "server": "ali"
+      },
+      {
+        "clash_mode": "Global",
+        "server": "fakeip"
+      },
+      {
+        "query_type": "HTTPS",
+        "action": "reject"
+      },
+      {
+        "query_type": "AAAA",
+        "action": "reject"
+      },
+      {
+        "rule_set": "geosite/cn",
+        "server": "ali"
+      },
+      {
+        "rule_set": [
+          "geosite/google",
+          "geosite/netflix",
+          "geosite/openai",
+          "geosite/telegram",
+          "geosite/youtube",
+          "geosite/twitter",
+          "crypto",
+          "geosite/geolocation-!cn"
+        ],
+        "server": "fakeip"
+      },
+      {
+        "query_type": "A",
+        "server": "fakeip"
+      }
+    ],
+    "final": "cloudflare",
+    "strategy": "prefer_ipv4",
+    "timeout": "5s",
+    "cache_capacity": 8192,
+    "optimistic": {
+      "enabled": true,
+      "timeout": "3d"
+    }
+  },
+  "route": {
+    "default_http_client": "direct-http",
+    "default_domain_resolver": {
+      "server": "ali",
+      "strategy": "ipv4_only"
+    },
+    "rules": [
+      {
+        "action": "sniff",
+        "sniffer": [
+          "http",
+          "tls",
+          "quic",
+          "dns"
+        ],
+        "timeout": "150ms"
+      },
+      {
+        "type": "logical",
+        "mode": "or",
+        "rules": [
+          {
+            "port": 53
+          },
+          {
+            "protocol": "dns"
+          }
+        ],
+        "action": "hijack-dns"
+      },
+      {
+        "ip_is_private": true,
+        "outbound": "direct"
+      },
+      {
+        "clash_mode": "Global",
+        "outbound": "GLOBAL"
+      },
+      {
+        "clash_mode": "Direct",
+        "outbound": "direct"
+      },
+      {
+        "rule_set": "geosite/cn",
+        "outbound": "CN"
+      },
+      {
+        "rule_set": "geoip/cn",
+        "outbound": "CN"
+      },
+      {
+        "rule_set": "geosite/bilibili",
+        "outbound": "Bilibili"
+      },
+      {
+        "domain_suffix": [
+          "msx.com",
+          "mystonks.org"
+        ],
+        "outbound": "Msx"
+      },
+      {
+        "rule_set": "geosite/netflix",
+        "outbound": "Netflix"
+      },
+      {
+        "rule_set": "crypto",
+        "outbound": "Crypto"
+      },
+      {
+        "rule_set": "geosite/twitter",
+        "outbound": "Twitter"
+      },
+      {
+        "rule_set": "geosite/youtube",
+        "outbound": "YouTube"
+      },
+      {
+        "rule_set": "geosite/openai",
+        "outbound": "OpenAI"
+      },
+      {
+        "rule_set": "geosite/telegram",
+        "outbound": "Telegram"
+      },
+      {
+        "rule_set": "geosite/google",
+        "outbound": "Google"
+      },
+      {
+        "rule_set": "geosite/apple",
+        "outbound": "Apple"
+      },
+      {
+        "rule_set": "geosite/geolocation-!cn",
+        "outbound": "proxy"
+      },
+      {
+        "action": "resolve",
+        "server": "cloudflare",
+        "strategy": "ipv4_only"
+      },
+      {
+        "rule_set": "geoip/netflix",
+        "outbound": "Netflix"
+      },
+      {
+        "rule_set": "geoip/telegram",
+        "outbound": "Telegram"
+      },
+      {
+        "rule_set": "geoip/google",
+        "outbound": "Google"
+      },
+      {
+        "rule_set": "geoip/apple",
+        "outbound": "Apple"
+      },
+      {
+        "rule_set": "geoip/cn",
+        "outbound": "CN"
+      }
+    ],
+    "rule_set": [
+      {
+        "tag": [
+          "geosite/apple",
+          "geosite/bilibili",
+          "geosite/cn",
+          "geosite/google",
+          "geosite/netflix",
+          "geosite/telegram",
+          "geosite/twitter",
+          "geosite/youtube",
+          "geoip/apple",
+          "geoip/google",
+          "geoip/netflix",
+          "geoip/telegram"
+        ],
+        "type": "remote",
+        "format": "binary",
+        "url": "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo-lite/{tag}.srs",
+        "update_interval": "7d"
+      },
+      {
+        "tag": [
+          "geoip/cn",
+          "geosite/openai",
+          "geosite/geolocation-!cn"
+        ],
+        "type": "remote",
+        "format": "binary",
+        "url": "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/{tag}.srs",
+        "update_interval": "7d"
+      },
+      {
+        "tag": "crypto",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://fastly.jsdelivr.net/gh/senshinya/singbox_ruleset@main/rule/Crypto/Crypto.srs",
+        "update_interval": "7d"
+      }
+    ],
+    "final": "final",
+    "auto_detect_interface": true
+  },
+  "outbounds": [
+    {
+      "tag": "proxy",
+      "type": "selector",
+      "outbounds": [
+        "all-auto",
+        "hk",
+        "hk-auto",
+        "tw",
+        "tw-auto",
+        "jp",
+        "jp-auto",
+        "sg",
+        "sg-auto",
+        "us",
+        "us-auto",
+        "all",
+        "direct"
+      ],
+      "default": "jp-auto",
+      "interrupt_exist_connections": false
+    },
+    {
+      "tag": "Google",
+      "type": "selector",
+      "outbounds": [
+        "all-auto",
+        "direct",
+        "hk",
+        "hk-auto",
+        "tw",
+        "tw-auto",
+        "jp",
+        "jp-auto",
+        "sg",
+        "sg-auto",
+        "us",
+        "us-auto",
+        "all"
+      ],
+      "default": "jp-auto",
+      "interrupt_exist_connections": false
+    },
+    {
+      "tag": "Apple",
+      "type": "selector",
+      "outbounds": [
+        "direct",
+        "all-auto",
+        "hk",
+        "hk-auto",
+        "tw",
+        "tw-auto",
+        "jp",
+        "jp-auto",
+        "sg",
+        "sg-auto",
+        "us",
+        "us-auto",
+        "all"
+      ],
+      "default": "direct",
+      "interrupt_exist_connections": false
+    },
+    {
+      "tag": "Telegram",
+      "type": "selector",
+      "outbounds": [
+        "all-auto",
+        "direct",
+        "hk",
+        "hk-auto",
+        "tw",
+        "tw-auto",
+        "jp",
+        "jp-auto",
+        "sg",
+        "sg-auto",
+        "us",
+        "us-auto",
+        "all"
+      ],
+      "default": "all-auto",
+      "interrupt_exist_connections": false
+    },
+    {
+      "tag": "Bilibili",
+      "type": "selector",
+      "outbounds": [
+        "direct",
+        "all-auto",
+        "hk",
+        "hk-auto",
+        "tw",
+        "tw-auto",
+        "jp",
+        "jp-auto",
+        "sg",
+        "sg-auto",
+        "us",
+        "us-auto",
+        "all"
+      ],
+      "default": "direct",
+      "interrupt_exist_connections": false
+    },
+    {
+      "tag": "Msx",
+      "type": "selector",
+      "outbounds": [
+        "all-auto",
+        "direct",
+        "hk",
+        "hk-auto",
+        "tw",
+        "tw-auto",
+        "jp",
+        "jp-auto",
+        "sg",
+        "sg-auto",
+        "us",
+        "us-auto",
+        "all"
+      ],
+      "default": "all-auto",
+      "interrupt_exist_connections": false
+    },
+    {
+      "tag": "Netflix",
+      "type": "selector",
+      "outbounds": [
+        "all-auto",
+        "direct",
+        "hk",
+        "hk-auto",
+        "tw",
+        "tw-auto",
+        "jp",
+        "jp-auto",
+        "sg",
+        "sg-auto",
+        "us",
+        "us-auto",
+        "all"
+      ],
+      "default": "hk-auto",
+      "interrupt_exist_connections": false
+    },
+    {
+      "tag": "Crypto",
+      "type": "selector",
+      "outbounds": [
+        "all-auto",
+        "tw",
+        "tw-auto",
+        "direct",
+        "hk",
+        "hk-auto",
+        "jp",
+        "jp-auto",
+        "sg",
+        "sg-auto",
+        "us",
+        "us-auto",
+        "all"
+      ],
+      "default": "tw-auto",
+      "interrupt_exist_connections": false
+    },
+    {
+      "tag": "Twitter",
+      "type": "selector",
+      "outbounds": [
+        "all-auto",
+        "tw",
+        "tw-auto",
+        "direct",
+        "hk",
+        "hk-auto",
+        "jp",
+        "jp-auto",
+        "sg",
+        "sg-auto",
+        "us",
+        "us-auto",
+        "all"
+      ],
+      "default": "hk-auto",
+      "interrupt_exist_connections": false
+    },
+    {
+      "tag": "YouTube",
+      "type": "selector",
+      "outbounds": [
+        "all-auto",
+        "direct",
+        "hk",
+        "hk-auto",
+        "tw",
+        "tw-auto",
+        "jp",
+        "jp-auto",
+        "sg",
+        "sg-auto",
+        "us",
+        "us-auto",
+        "all"
+      ],
+      "default": "jp-auto",
+      "interrupt_exist_connections": false
+    },
+    {
+      "tag": "OpenAI",
+      "type": "selector",
+      "outbounds": [
+        "us-auto",
+        "jp-auto",
+        "sg-auto",
+        "all-auto",
+        "direct",
+        "hk",
+        "hk-auto",
+        "tw",
+        "tw-auto",
+        "jp",
+        "sg",
+        "us",
+        "all"
+      ],
+      "default": "jp-auto",
+      "interrupt_exist_connections": false
+    },
+    {
+      "tag": "CN",
+      "type": "selector",
+      "outbounds": [
+        "direct",
+        "all-auto",
+        "hk",
+        "hk-auto",
+        "tw",
+        "tw-auto",
+        "jp",
+        "jp-auto",
+        "sg",
+        "sg-auto",
+        "us",
+        "us-auto",
+        "all"
+      ],
+      "default": "direct",
+      "interrupt_exist_connections": false
+    },
+    {
+      "tag": "final",
+      "type": "selector",
+      "outbounds": [
+        "all-auto",
+        "direct",
+        "hk",
+        "hk-auto",
+        "tw",
+        "tw-auto",
+        "jp",
+        "jp-auto",
+        "sg",
+        "sg-auto",
+        "us",
+        "us-auto",
+        "all"
+      ],
+      "default": "jp-auto",
+      "interrupt_exist_connections": false
+    },
+    {
+      "tag": "hk",
+      "type": "selector",
+      "outbounds": [],
+      "interrupt_exist_connections": false
+    },
+    {
+      "tag": "tw",
+      "type": "selector",
+      "outbounds": [],
+      "interrupt_exist_connections": false
+    },
+    {
+      "tag": "jp",
+      "type": "selector",
+      "outbounds": [],
+      "interrupt_exist_connections": false
+    },
+    {
+      "tag": "sg",
+      "type": "selector",
+      "outbounds": [],
+      "interrupt_exist_connections": false
+    },
+    {
+      "tag": "us",
+      "type": "selector",
+      "outbounds": [],
+      "interrupt_exist_connections": false
+    },
+    {
+      "tag": "all",
+      "type": "selector",
+      "outbounds": [],
+      "interrupt_exist_connections": false
+    },
+    {
+      "tag": "hk-auto",
+      "type": "urltest",
+      "outbounds": [],
+      "url": "https://www.gstatic.com/generate_204",
+      "interval": "10m",
+      "idle_timeout": "30m",
+      "tolerance": 100,
+      "interrupt_exist_connections": false
+    },
+    {
+      "tag": "tw-auto",
+      "type": "urltest",
+      "outbounds": [],
+      "url": "https://www.gstatic.com/generate_204",
+      "interval": "10m",
+      "idle_timeout": "30m",
+      "tolerance": 100,
+      "interrupt_exist_connections": false
+    },
+    {
+      "tag": "jp-auto",
+      "type": "urltest",
+      "outbounds": [],
+      "url": "https://www.gstatic.com/generate_204",
+      "interval": "10m",
+      "idle_timeout": "30m",
+      "tolerance": 100,
+      "interrupt_exist_connections": false
+    },
+    {
+      "tag": "sg-auto",
+      "type": "urltest",
+      "outbounds": [],
+      "url": "https://www.gstatic.com/generate_204",
+      "interval": "10m",
+      "idle_timeout": "30m",
+      "tolerance": 100,
+      "interrupt_exist_connections": false
+    },
+    {
+      "tag": "us-auto",
+      "type": "urltest",
+      "outbounds": [],
+      "url": "https://www.gstatic.com/generate_204",
+      "interval": "10m",
+      "idle_timeout": "30m",
+      "tolerance": 100,
+      "interrupt_exist_connections": false
+    },
+    {
+      "tag": "all-auto",
+      "type": "urltest",
+      "outbounds": [],
+      "url": "https://www.gstatic.com/generate_204",
+      "interval": "10m",
+      "idle_timeout": "30m",
+      "tolerance": 100,
+      "interrupt_exist_connections": false
+    },
+    {
+      "tag": "GLOBAL",
+      "type": "selector",
+      "outbounds": [
+        "direct",
+        "all-auto",
+        "hk",
+        "hk-auto",
+        "tw",
+        "tw-auto",
+        "jp",
+        "jp-auto",
+        "sg",
+        "sg-auto",
+        "us",
+        "us-auto",
+        "all"
+      ],
+      "default": "direct",
+      "interrupt_exist_connections": false
+    },
+    {
+      "tag": "direct",
+      "type": "direct"
+    }
+  ],
+  "inbounds": [
+    {
+      "type": "tun",
+      "tag": "tun-in",
+      "interface_name": "singtun0",
+      "address": [
+        "172.19.0.1/28"
+      ],
+      "mtu": 1420,
+      "auto_route": true,
+      "strict_route": true,
+      "udp_timeout": "2m",
+      "dns_mode": "hijack",
+      "platform": {
+        "http_proxy": {
+          "enabled": true,
+          "server": "127.0.0.1",
+          "server_port": 7890
+        }
+      }
+    },
+    {
+      "type": "mixed",
+      "tag": "mixed-in",
+      "listen": "127.0.0.1",
+      "listen_port": 7890
+    }
+  ],
+  "experimental": {
+    "clash_api": {
+      "external_controller": "127.0.0.1:9090",
+      "external_ui": "ui",
+      "external_ui_download_url": "https://github.com/MetaCubeX/metacubexd/archive/refs/heads/gh-pages.zip",
+      "external_ui_download_detour": "proxy"
+    },
+    "cache_file": {
+      "enabled": true,
+      "store_fakeip": true,
+      "store_dns": true
+    }
+  }
+}
