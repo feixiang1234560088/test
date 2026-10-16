@@ -65,32 +65,19 @@
       },
       {
         "clash_mode": "Global",
+        "query_type": "A",
         "server": "fakeip"
       },
       {
-        "query_type": "HTTPS",
-        "action": "reject"
-      },
-      {
-        "query_type": "AAAA",
+        "query_type": [
+          "HTTPS",
+          "AAAA"
+        ],
         "action": "reject"
       },
       {
         "rule_set": "geosite/cn",
         "server": "ali"
-      },
-      {
-        "rule_set": [
-          "geosite/google",
-          "geosite/netflix",
-          "geosite/openai",
-          "geosite/telegram",
-          "geosite/youtube",
-          "geosite/twitter",
-          "crypto",
-          "geosite/geolocation-!cn"
-        ],
-        "server": "fakeip"
       },
       {
         "query_type": "A",
@@ -149,16 +136,20 @@
         "outbound": "direct"
       },
       {
+        "rule_set": "geosite/bilibili",
+        "outbound": "Bilibili"
+      },
+      {
+        "rule_set": "geosite/openai",
+        "outbound": "OpenAI"
+      },
+      {
         "rule_set": "geosite/cn",
         "outbound": "CN"
       },
       {
         "rule_set": "geoip/cn",
         "outbound": "CN"
-      },
-      {
-        "rule_set": "geosite/bilibili",
-        "outbound": "Bilibili"
       },
       {
         "domain_suffix": [
@@ -176,16 +167,21 @@
         "outbound": "Crypto"
       },
       {
+        "domain_suffix": [
+          "okex.org",
+          "ouxyi.cash",
+          "bitkeep.top",
+          "bitget.com"
+        ],
+        "outbound": "Crypto"
+      },
+      {
         "rule_set": "geosite/twitter",
         "outbound": "Twitter"
       },
       {
         "rule_set": "geosite/youtube",
         "outbound": "YouTube"
-      },
-      {
-        "rule_set": "geosite/openai",
-        "outbound": "OpenAI"
       },
       {
         "rule_set": "geosite/telegram",
